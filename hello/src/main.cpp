@@ -6,6 +6,9 @@
  */
 
 #include "main.h"
+#include <iostream>
+
+using namespace std;
 
 main::main() {
 	// TODO Auto-generated constructor stub
