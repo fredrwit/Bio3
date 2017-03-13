@@ -1,12 +1,4 @@
-/**
- * Lydia Carroll, JHED: lcarro12
- * Ben Periera, JHED: bhoertn1
- * Ryan Walter, rwalte25
- *
- * Data Structures 
- * EN.600.226(01) 
- * Project 4, Part C
- */
+package bio3;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -23,7 +15,7 @@ import java.io.IOException;
  * Run from command line with image name and desire kvalue.
  * We have found kvalue = 100 to be very effective.
  */
-public class P4C {
+public class MST {
     /** Number of primary colors, three. */
     static final int THREE = 3;
 
@@ -31,7 +23,7 @@ public class P4C {
     static final int THOU = 1000;
 
     /** Empty constructor for checkstyle. */
-    public P4C() {
+    public MST() {
         // don't know how to get rid of this error
     }
 
@@ -56,7 +48,7 @@ public class P4C {
      *  @param pd the distance object for pixels
      *  @return the graph that was created
      */
-    static WGraph<Pixel> imageToGraph(BufferedImage image, Distance<Pixel> pd) {
+    static WGraph<Pixel> imageToGraph(BufferedImage image, PixelDistance<Pixel> pd) {
 
         WGraphP4<Pixel> graph = new WGraphP4<Pixel>();
 
@@ -350,62 +342,14 @@ public class P4C {
 
         try {
           // the line that reads the image file
-            File file = new File("data/Test image.jpg");
+            File file = new File("data/test1.png");
             BufferedImage image = ImageIO.read(file);
             WGraph<Pixel> g = imageToGraph(image, new PixelDistance());
             
-            List<WEdge<Pixel>> res = segmenter(g, 400.00);
+            List<WEdge<Pixel>> res = segmenter(g, 100.00);
             System.out.println("Segmenter complete, generating image...");
 
 
-            // After you have a spanning tree connected component x, 
-            // you can generate an output image like this:
-
-
-
-            WGraphP4<Pixel> subgraph = new WGraphP4<Pixel>();
-
-            List<WEdge<Pixel>> reset = new LinkedList<WEdge<Pixel>>();
-            for (WEdge<Pixel> w : res) {
-                w.end().reset();
-                w.source().reset();
-            }
-
-            for (WEdge<Pixel> w : res) {
-                //reset connectedness of vertices
-                subgraph.addEdge(w);
-            }
-
-
-            //depth first portion
-            //reset the visited flags for all vertices
-            for (GVertex<Pixel> ver : subgraph.allVertices()) {
-                ver.clearVisited();
-            }
-
-            int i = 0;
-            for (WEdge<Pixel> w : res)  {
-                List<GVertex<Pixel>> vertexList;
-
-                if (!w.end().isVisited()) {
-                    vertexList = subgraph.depthFirstSegmenter(w.end());
-                    if (vertexList.size() >= subgraph.numVerts() / THOU) {
-                        writeImage(vertexList,  image, file.getName(), i);
-                        i++;
-                        System.out.println(i);
-                    }
-                    
-                }
-
-                if (!w.source().isVisited()) {
-                    vertexList = subgraph.depthFirstSegmenter(w.source());
-                    if (vertexList.size() >= subgraph.numVerts() / THOU) {
-                        writeImage(vertexList,  image, file.getName(), i);
-                        i++;
-                        System.out.println(i);
-                    }
-                }
-            }
 
 
 
