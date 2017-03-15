@@ -354,7 +354,9 @@ public class P4C {
             BufferedImage image = ImageIO.read(file);
             WGraph<Pixel> g = imageToGraph(image, new PixelDistance());
             
-            List<WEdge<Pixel>> res = segmenter(g, 400.00);
+            List<WEdge<Pixel>> res = segmenter(g, 450.00);
+            
+            System.out.println(res.size());
             System.out.println("Segmenter complete, generating image...");
 
 
@@ -392,7 +394,7 @@ public class P4C {
                     if (vertexList.size() >= subgraph.numVerts() / THOU) {
                         writeImage(vertexList,  image, file.getName(), i);
                         i++;
-                        System.out.println(i);
+                        //System.out.println(i);
                     }
                     
                 }
