@@ -30,12 +30,11 @@ def graph_cut(pixels, lab, threshold):
     graph = create_graph(rows, cols)
 
     init_graph(graph, rows, cols, pixels, lab)
-    prim(graph)
-    exit()
 
     clusters,paths = create_clusters(graph, threshold)
 
-    color_clusters(clusters)
+    #color_clusters(clusters)
+    color_edges(graph)
 
     #for node in paths:
     #    node.set_colors([0,255,0])
@@ -95,6 +94,13 @@ def prim(graph):
                 pass
 
 
+def color_edges(graph):
+    for rows in graph:
+        for node in rows:
+            for neighbor in node.neighbors:
+                if neighbor.get_cluster() != node.get_cluster():
+                    node.set_colors([0,255,0])
+
 
 def create_clusters(graph, threshold):
     print("Making cuts and creating clusters...")
@@ -114,7 +120,7 @@ def create_clusters(graph, threshold):
             for cluster in clusters:
                 if cluster.belongs_to_cluster(node, threshold):
                     cluster.nodes.append(node)
-                    node.cluster()
+                    node.cluster(cluster.get_cluster_id())
                     break
 
             if not node.clustered:
@@ -149,4 +155,4 @@ def get_color_difference(lab1, lab2):
     return ((lab2[0] - lab1[0]) ** 2 + (lab2[1] - lab1[1]) ** 2 + (lab2[2] - lab1[2]) ** 2) ** 0.5
 
 
-main("../Img/lol.jpg", 15)
+main("../Img/lol.jpg", 50)

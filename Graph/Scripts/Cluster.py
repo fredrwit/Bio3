@@ -17,6 +17,7 @@ def unique_colors(color, colors_used):
 
 class Cluster(object):
     def __init__(self):
+        self.id = id(self)
         self.nodes = []
         self.color = [0, 0, 0]
         self.lab = [0, 0, 0]
@@ -49,3 +50,6 @@ class Cluster(object):
 
         for node in self.nodes:
             node.set_colors(self.color)
+
+    def get_cluster_id(self):
+        return self.id

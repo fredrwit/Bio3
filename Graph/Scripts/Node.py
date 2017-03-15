@@ -7,6 +7,7 @@ class Node(object):
         self.rgb_values = [0, 0, 0]
         self.lab_values = [0, 0, 0]
         self.clustered = False
+        self.cluster_id = None
         self.neighbors = []
         self.center = None
 
@@ -17,8 +18,9 @@ class Node(object):
     def add_neighbor(self, node):
         self.neighbors.append(node)
 
-    def cluster(self):
+    def cluster(self,cluster_id):
         self.clustered = True
+        self.cluster_id = cluster_id
 
     def set_center(self, center):
         self.center = center
@@ -31,4 +33,7 @@ class Node(object):
 
     def __eq__(self, other):
         return self.id != other.id
+
+    def get_cluster(self):
+        return self.cluster_id
 

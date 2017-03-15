@@ -50,7 +50,7 @@ public class MST {
      */
     static WGraph<Pixel> imageToGraph(BufferedImage image, PixelDistance<Pixel> pd) {
 
-        WGraphP4<Pixel> graph = new WGraphP4<Pixel>();
+        WGraph<Pixel> graph = new WGraph<Pixel>();
 
         
 
@@ -169,11 +169,6 @@ public class MST {
                 }
             }
         }
-    
-    
-
-        
-
 
         return graph;
     }
