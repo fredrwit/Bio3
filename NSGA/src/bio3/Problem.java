@@ -1,4 +1,4 @@
-package bio3;
+package src.bio3;
 
 public class Problem {
 	public Pixels pixels;

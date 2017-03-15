@@ -1,4 +1,4 @@
-package bio3;
+package src.bio3;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
