@@ -288,17 +288,9 @@ public class Main {
 		
 		initialPop pop2 = new initialPop(graph,pixels);
 		
-		System.out.println(System.currentTimeMillis());
-		//NSGA.overallDeviation(graph, pop2.population);
-		System.out.println(System.currentTimeMillis());
-		NSGA.edge(graph, pop2.population);
-		System.out.println(System.currentTimeMillis());
-		//NSGA.connectivity(graph, pop2.population);
-		System.out.println(System.currentTimeMillis());
+		NSGA.calcObj(graph, pop2.population);
 		boolean[] objectives = {true,false,false,false};
-		System.out.println(System.currentTimeMillis());
 		System.out.println(NSGA.fnds(pop2.population, objectives));
-		System.out.println(System.nanoTime());
 
 		System.exit(0);
 		

@@ -7,27 +7,7 @@ import java.util.Map;
 
 public class NSGA {
 	
-
-	public static void overallDeviation(Graph graph, List<Chromosome> chromList){
-		
-		for (Chromosome chrom : chromList){
-			List<Cluster> clusters = chrom.getClusters();
-			Main.decode(chrom, graph);
-			double[] centroid;
-			double overallDeviation = 0;
-			for (Cluster c : clusters){
-				centroid = c.centroid;
-				List<Node> clusterNodes = c.getNodes();
-				for (Node n : clusterNodes){
-					overallDeviation += distance(n, centroid); 
-				}
-			}
-			chrom.setOverallDeviation(overallDeviation);
-		}
-		
-	}
-	
-	public static void edge(Graph graph, List<Chromosome> chromList){
+	public static void calcObj(Graph graph, List<Chromosome> chromList){
 		
 		for (Chromosome chrom : chromList){
 			
@@ -55,26 +35,6 @@ public class NSGA {
 			chrom.setConnectivity(connValue);
 			chrom.setOverallDeviation(overallDeviation);
 		}
-	}
-	
-	public static void connectivity(Graph graph, List<Chromosome> chromList){
-		
-		for (Chromosome chrom : chromList){
-			double connValue = 0.0;
-			Main.decode(chrom, graph);
-			for (int i = 0; i < graph.rows; i++){
-				for (int j = 0; j < graph.cols; j++){
-					double counter = 0;
-					for (Node neighbor : graph.nodes[i][j].neighbors){
-						if (neighbor.getSegment() != graph.nodes[i][j].getSegment()) {
-							counter += 1.0;
-							connValue += 1.0/counter;
-						}
-					}
-				}
-			}
-			chrom.setConnectivity(connValue);
-		}	
 	}
 	
 	private static double distance(Node one, double[] centroid ) {
