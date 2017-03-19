@@ -1,6 +1,7 @@
 package test2;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,6 +112,23 @@ public class NSGA {
 			front.put(i, Q);
 		}
 		return front;
+	}
+	
+	public static void crowdingDist(Map<Integer, List<Chromosome>> fronts, boolean[] objectives) {
+		for (int i : fronts.keySet()) {
+			int L = fronts.get(i).size();
+			for (Chromosome chrom : fronts.get(i)) {
+				chrom.crowdingDist = 0;
+			}
+			if (objectives[0]) {
+				fronts.get(i).sort(Comparator.comparing(Chromosome::getDev));
+				fronts.get(i).get(0).crowdingDist = Double.POSITIVE_INFINITY;
+				fronts.get(i).get(L).crowdingDist = Double.POSITIVE_INFINITY;
+				for (int j = 1; j < L; j++) {
+					fronts.get(i).get(j).crowdingDist += (fronts.get(i).get(j+1).)
+				}
+			}
+		}
 	}
 
 }

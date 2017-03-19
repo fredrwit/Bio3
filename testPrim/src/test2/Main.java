@@ -184,8 +184,12 @@ public class Main {
 		return chrom;
 	}
 	
-	public static void runSPEA2() {
-		int generations = 0;
+	public static void generateChildren(List<Chromosome> parents) {
+		List<Chromosome> children = new ArrayList<Chromosome>();
+		while (children.size() < parents.size()) {
+			
+			
+		}
 		
 	}
 	

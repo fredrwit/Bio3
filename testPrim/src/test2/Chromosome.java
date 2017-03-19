@@ -13,7 +13,19 @@ public class Chromosome {
 	public double connectivity;
 	public double edge;
 	public int rank;
+	public double crowdingDist;
 
+	public double getDev() {
+		return this.overallDeviation;
+	}
+	
+	public double getEdge() {
+		return this.edge;
+	}
+	
+	public double getConn() {
+		return this.connectivity;
+	}
 	
 	public Chromosome(int size) {
 		this.representation = new int[size]; 
