@@ -265,13 +265,17 @@ public class Main {
 	
 	
 	public static void main(String[] args) {		
-		BufferedImage pixels = get_image("Test image/yt.png");
+		BufferedImage pixels = get_image("Test image/Test_image.jpg");
 		Graph graph = new Graph(pixels.getHeight(),pixels.getWidth());
 		initGraph(graph,pixels);
 		initWeights(graph);
 		List<Edge> mst = prims(graph);
-		mst.remove(0);
-		mst.remove(0);
+		double sum = 0;
+		for (Edge edge : mst) {
+			System.out.println(edge.startNode + " " + edge.endNode + " " + edge.getWeight());
+			sum += edge.getWeight();
+		}
+		//mst.remove(0);
 		generateChromosome(mst, graph).printRepr();
 		//List<Chromosome> pop = initPop(mst, graph, 10);
 		
