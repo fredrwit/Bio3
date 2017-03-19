@@ -14,4 +14,10 @@ public class Edge {
 	public double getWeight() {
 		return this.weight;
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "(" + startNode + ", " + endNode + ")";
+	}
 }

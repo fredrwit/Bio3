@@ -4,10 +4,13 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Time;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Random;
 
@@ -99,6 +102,20 @@ public class Main {
 					currentCluster++;
 				}
 			}
+		}
+		Map<Integer,Cluster> clusters = new HashMap<Integer, Cluster>();
+		for (int i = 1; i < graph.getSize()+1; i++) {
+			if (clusters.containsKey(graph.getNode(i).getSegment())) {
+				clusters.get(graph.getNode(i).getSegment()).addNode(graph.getNode(i));
+			}
+			else {
+				clusters.put(graph.getNode(i).getSegment(),new Cluster(graph.getNode(i).getSegment()));
+				clusters.get(graph.getNode(i).getSegment()).addNode(graph.getNode(i));
+			}
+		}
+		for (Cluster cluster : clusters.values()) {			
+			cluster.calculateCentroid();
+			chrom.addCluster(cluster);
 		}
 		return currentCluster-1;
 	}
@@ -221,15 +238,26 @@ public class Main {
 	public static Chromosome generateChromosome(List<Edge> mst, Graph graph){
         Chromosome chrom = new Chromosome(graph.getSize());
         for (Edge edge : mst) {
-            if (chrom.getRepr()[edge.startNode-1] != 0){
-                chrom.getRepr()[edge.endNode-1] = edge.startNode;
+            if (chrom.getRepr()[edge.startNode-1] != 0){	
+            	int endNode = edge.endNode;
+            	int prevEnd = edge.endNode;
+            	int lastEnd = edge.endNode;
+            	while (chrom.getRepr()[endNode-1] != 0) {
+            		endNode = chrom.getRepr()[chrom.getRepr()[endNode-1]-1];
+            		chrom.getRepr()[chrom.getRepr()[prevEnd-1]-1] = prevEnd;
+            		prevEnd = endNode;
+            		if (prevEnd == 0) {
+            			break;
+            		}
+            	}
+            	chrom.getRepr()[lastEnd-1] = edge.startNode;
             }else{
                 chrom.getRepr()[edge.startNode-1] = edge.endNode;
             }
         }
         for (int i = 0; i < graph.getSize(); i++) {
             if (chrom.getRepr()[i] == 0){
-                chrom.getRepr()[i] = i;
+                chrom.getRepr()[i] = i+1;
             }
         }
         return chrom;
@@ -237,25 +265,11 @@ public class Main {
 	
 	public static List<Chromosome> initPop (List<Edge> mst, Graph graph, int size) {
 		List<Chromosome> pop = new ArrayList<Chromosome>();
-		Collections.sort(mst, new Comparator<Edge>() {
-		    @Override
-		    public int compare(Edge o1, Edge o2) {
-		        if (o1.getWeight() > o2.getWeight()) {
-		        	return 1;
-		        }
-		        else if (o1.getWeight() < o2.getWeight()) {
-		        	return -1;
-		        }
-		        else {
-		        	return 0;
-		        }
-		    }
-		});
-		for (int i = 0; i < size; i++ ) {
+		for (int i = 1; i < size+1; i++ ) {
 			ArrayList<Edge> tempMST = new ArrayList<Edge>(mst);
 			int removed = 0;
-			while (removed < i-1) {
-				mst.remove(0);
+			while (removed < (i-1)) {
+				tempMST.remove(tempMST.indexOf(tempMST.stream().max(Comparator.comparing(Edge::getWeight)).get()));
 				removed++;
 			}
 			pop.add(generateChromosome(tempMST, graph));
@@ -265,27 +279,47 @@ public class Main {
 	
 	
 	public static void main(String[] args) {		
-		BufferedImage pixels = get_image("Test image/Test_image.jpg");
+		BufferedImage pixels = get_image("Test image/1/test image.jpg");
 		Graph graph = new Graph(pixels.getHeight(),pixels.getWidth());
 		initGraph(graph,pixels);
 		initWeights(graph);
 		List<Edge> mst = prims(graph);
-		double sum = 0;
-		for (Edge edge : mst) {
-			System.out.println(edge.startNode + " " + edge.endNode + " " + edge.getWeight());
-			sum += edge.getWeight();
+		List<Chromosome> pop = initPop(mst, graph, 5);
+		
+		initialPop pop2 = new initialPop(graph,pixels);
+		
+		System.out.println(System.currentTimeMillis());
+		//NSGA.overallDeviation(graph, pop2.population);
+		System.out.println(System.currentTimeMillis());
+		NSGA.edge(graph, pop2.population);
+		System.out.println(System.currentTimeMillis());
+		//NSGA.connectivity(graph, pop2.population);
+		System.out.println(System.currentTimeMillis());
+		boolean[] objectives = {true,false,false,false};
+		System.out.println(System.currentTimeMillis());
+		System.out.println(NSGA.fnds(pop2.population, objectives));
+		System.out.println(System.nanoTime());
+
+		System.exit(0);
+		
+		for (int q = 0; q < pop.size(); q++) {
+			//System.out.println(decode(pop.get(q), graph));
+			System.out.println(pop.get(q).overallDeviation);
+			System.out.println(pop.get(q).edge);
+			System.out.println(pop.get(q).connectivity);
+			System.out.println();
+			//colorEdges(graph);
+			//writeImage(graph, pixels, "loly", q);
 		}
-		//mst.remove(0);
-		generateChromosome(mst, graph).printRepr();
-		//List<Chromosome> pop = initPop(mst, graph, 10);
+		int[] counter = new int[50];
+		for (int i = 0; i < graph.rows; i++) {
+			for (int j = 0; j < graph.cols; j++) {
+				counter[graph.nodes[i][j].getSegment()-1] += 1;
+			}
+		}
+		System.out.println(Arrays.toString(counter));
 		
-//		for (int q = 0; q < pop.size(); q++) {
-//			System.out.println(decode(pop.get(q), graph));
-//			
-//		}
 		
-		colorEdges(graph);
-		writeImage(graph, pixels, "loly", 1);
 		
 		System.out.println("Done");
 
