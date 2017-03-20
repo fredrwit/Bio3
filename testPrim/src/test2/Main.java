@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -114,7 +115,7 @@ public class Main {
 				clusters.get(graph.getNode(i).getSegment()).addNode(graph.getNode(i));
 			}
 		}
-		for (Cluster cluster : clusters.values()) {			
+		for (Cluster cluster : clusters.values()) {	
 			cluster.calculateCentroid();
 			chrom.addCluster(cluster);
 		}
@@ -238,12 +239,20 @@ public class Main {
     }
 	
 	public static List<Chromosome> initPop (List<Edge> mst, Graph graph, int size) {
+		double tull = mst.stream().max(Comparator.comparing(Edge::getWeight)).get().weight*0.1;
 		List<Chromosome> pop = new ArrayList<Chromosome>();
 		for (int i = 1; i < size+1; i++ ) {
 			ArrayList<Edge> tempMST = new ArrayList<Edge>(mst);
+			ArrayList<Edge> candidates = new ArrayList<Edge>();
+			for (Edge e : mst) {
+				if (e.weight > tull) {
+					candidates.add(e);
+				}
+			}
 			int removed = 0;
 			while (removed < (i-1)) {
-				tempMST.remove(tempMST.indexOf(tempMST.stream().max(Comparator.comparing(Edge::getWeight)).get()));
+				tempMST.remove(candidates.get(new Random().nextInt(candidates.size())));
+				//tempMST.remove(tempMST.indexOf(tempMST.stream().max(Comparator.comparing(Edge::getWeight)).get()));
 				removed++;
 			}
 			pop.add(generateChromosome(tempMST, graph));
@@ -253,13 +262,13 @@ public class Main {
 	
 	public static void runNSGA2(List<Chromosome> pop, Graph graph, int generation) {
 		NSGA.calcObj(graph, pop);
-		for (Chromosome chrom: pop) {
-			System.out.println("dev: " + chrom.overallDeviation);
-			System.out.println("edge: "+ chrom.edge);
-			System.out.println("conn: "+chrom.connectivity);
-			System.out.println();
-		}
-		System.exit(0);
+//		for (Chromosome chrom: pop) {
+//			System.out.println("dev: " + chrom.overallDeviation);
+//			System.out.println("edge: "+ chrom.edge);
+//			System.out.println("conn: "+chrom.connectivity);
+//			System.out.println();
+//		}
+//		System.exit(0);
 		boolean[] objectives = {true,false,false,false};
 		for (int g = 0; g < generation; g++) {
 			System.out.println("Generation number: " + Integer.toString(g+1));
@@ -307,12 +316,12 @@ public class Main {
 			//System.out.println(pop.get(q).connectivity);
 			//System.out.println();
 
-				colorEdges(graph);
-				writeImage(graph, pixels, "loly", p);
+				//colorEdges(graph);
+				//writeImage(graph, pixels, "loly", p);
 			
 		}
 		
-		runNSGA2(pop2, graph, 25);
+		runNSGA2(pop2, graph, 30);
 		
 		int num_seg = 0;
 		for (int q = 0; q < pop2.size(); q++) {

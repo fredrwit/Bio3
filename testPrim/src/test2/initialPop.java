@@ -52,8 +52,6 @@ public class initialPop {
 			this.population.get(i-1).setNumClusters(chromClusters);
 			System.out.println(chromClusters);
 		}
-		colorEdges(graph);
-		writeImage(graph, this.pixel, "loly", 2);
 	}
 		
 	public static int decode(Chromosome chrom, Graph graph) {
