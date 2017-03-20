@@ -73,6 +73,7 @@ public class Main {
     }
 	
 	public static int decode(Chromosome chrom, Graph graph) {
+		chrom.setCluster();
 		int currentCluster = 1;
 		for (int i = 1; i < chrom.getSize()+1; i++) {
 			graph.getNode(i).segment(-1);
@@ -242,7 +243,7 @@ public class Main {
 			ArrayList<Edge> tempMST = new ArrayList<Edge>(mst);
 			int removed = 0;
 			while (removed < (i-1)) {
-				tempMST.remove(tempMST.indexOf(tempMST.stream().max(Comparator.comparing(Edge::getWeight)).get())-removed*3000);
+				tempMST.remove(tempMST.indexOf(tempMST.stream().max(Comparator.comparing(Edge::getWeight)).get()));
 				removed++;
 			}
 			pop.add(generateChromosome(tempMST, graph));
@@ -252,6 +253,13 @@ public class Main {
 	
 	public static void runNSGA2(List<Chromosome> pop, Graph graph, int generation) {
 		NSGA.calcObj(graph, pop);
+		for (Chromosome chrom: pop) {
+			System.out.println("dev: " + chrom.overallDeviation);
+			System.out.println("edge: "+ chrom.edge);
+			System.out.println("conn: "+chrom.connectivity);
+			System.out.println();
+		}
+		System.exit(0);
 		boolean[] objectives = {true,false,false,false};
 		for (int g = 0; g < generation; g++) {
 			System.out.println("Generation number: " + Integer.toString(g+1));

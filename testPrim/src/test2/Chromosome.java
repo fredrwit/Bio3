@@ -7,7 +7,7 @@ import java.util.List;
 public class Chromosome {
 	
 	private int[] representation;
-	private List<Cluster> clusters = new ArrayList<Cluster>();
+	private List<Cluster> clusters;
 	private int numClusters;
 	public double overallDeviation;
 	public double connectivity;
@@ -58,6 +58,10 @@ public class Chromosome {
 	public void setEdge(double edge){
 		
 		this.edge = edge;
+	}
+	
+	public void setCluster() {
+		this.clusters = new ArrayList<Cluster>();
 	}
 	
 	public void addCluster(Cluster c){
