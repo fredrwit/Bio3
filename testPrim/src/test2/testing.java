@@ -61,9 +61,80 @@ public class testing {
 				c2.update(i, p2.getRepr()[i]);
 			}
 			
-		}
+		} 
 		return new Object[]{c1, c2};
 	}
+	
+	public void setSegmentSize(){
+		Node[] nodepoint = new Node[nodes];
+		for (int i = 0; i < mst.size(); i++) {
+			int startNode = mst.get(i).startNode;
+			int endNode = mst.get(i).endNode;
+			if (nodepoint[startNode] == null){
+				Node newNode = new Node(startNode);
+				Node newEndNode = new Node(endNode);
+				newNode.pointers.add(endNode);
+				newEndNode.pointers.add(startNode);
+				nodepoint[startNode] = newNode;
+				nodepoint[endNode] = newEndNode;
+			}else{
+				nodepoint[startNode].pointers.add(endNode);
+				Node newEndNode = new Node(endNode);
+				newEndNode.pointers.add(startNode);
+				nodepoint[endNode] = newEndNode;
+			}
+		}
+			
+		this.nodesList = nodepoint;
+		int sum = 0;
+		for (int j = 0; j < this.cuts.size(); j++) {
+			sum = 0;
+			int start = cuts.get(j);
+			for (int i = 0; i < nodesList[start].pointers.size(); i++) {
+				nodesList[start].numbers.add(Recursive(nodesList[nodesList[start].pointers.get(i)], start));	
+				sum += nodesList[start].numbers.get(i);
+			}nodesList[start].sum = sum;
+		}
+		for (int i = 0; i < this.cuts.size(); i++){
+			int start2 = cuts.get(i);
+			for (int j = 0; j < nodesList[start2].pointers.size(); j++) {
+				Recursive2(nodesList[nodesList[start2].pointers.get(j)], start2, nodesList[start2].sum-nodesList[start2].numbers.get(j)+1);
+			}
+		}
+	}
+	public int Recursive2(Node node, int previous, int number){
+		int test = 0;
+		node.numbers.set(0, number);
+		node.sum += number;
+		if(node.pointers.size() == 1){
+			return test;
+		}
+		for (int i = 1; i < node.pointers.size(); i++) {
+			test = Recursive2(this.nodesList[node.pointers.get(i)], node.number, node.sum-node.numbers.get(i)+1);	
+		}
+		return test;
+	}
+
+	public int Recursive(Node node, int previous){
+		int number = 0;
+		if (node.pointers.size() == 1){
+			node.numbers.add(1);
+			return number+1;
+		}
+		int localNumber = 0;
+		for (int i = 0; i < node.pointers.size(); i++) {
+			if(node.pointers.get(i) == previous){
+				node.numbers.add(1);
+			}else{
+				localNumber = Recursive(this.nodesList[node.pointers.get(i)], node.number);
+				node.numbers.add(localNumber);
+			}
+			number += localNumber;
+		}node.sum = number;
+		return number+1;
+	}
+	
+	
 	
 	
 	public static void main(String[] args) {

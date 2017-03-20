@@ -18,6 +18,6 @@ public class Edge {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return "(" + startNode + ", " + endNode + ")";
+		return startNode + " " + endNode;
 	}
 }

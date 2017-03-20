@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 public class NSGA {
 	
@@ -18,11 +19,21 @@ public class NSGA {
 		
 		for (Chromosome chrom : chromList){
 			
+			
+			
 			double overallDeviation = 0;
 			double edgeValue = 0.0;
 			double connValue = 0.0;
 			
 			Main.decode(chrom, graph);
+			
+			IntStream.range(1, graph.getSize()+1).parallel().forEach(i -> {
+				graph.getNode(i).neighbors.stream().parallel().forEach(j -> {
+					if (j.getSegment() != graph.getNode(i).getSegment()) {
+						edgeValue += Main.distance(graph.getNode(i), j);
+						}
+					});
+				});
 			
 			for (int i = 0; i < graph.rows; i++){
 				for (int j = 0; j < graph.cols; j++){

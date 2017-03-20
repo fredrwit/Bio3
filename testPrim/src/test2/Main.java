@@ -283,11 +283,15 @@ public class Main {
 	
 	
 	public static void main(String[] args) {		
-		BufferedImage pixels = get_image("Test image/dismap.jpg");
+		BufferedImage pixels = get_image("Test image/test_image.jpg");
 		Graph graph = new Graph(pixels.getHeight(),pixels.getWidth());
 		initGraph(graph,pixels);
 		initWeights(graph);
 		List<Edge> mst = prims(graph);
+		
+		System.out.println(mst);
+		System.exit(0);
+		
 		List<Chromosome> pop2 = initPop(mst, graph, 50);
 		
 		//initialPop pop2 = new initialPop(graph,pixels);
