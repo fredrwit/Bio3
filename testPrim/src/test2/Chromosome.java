@@ -15,6 +15,10 @@ public class Chromosome {
 	public int rank;
 	public double crowdingDist;
 
+	public double getCrowd() {
+		return this.crowdingDist;
+	}
+	
 	public double getDev() {
 		return this.overallDeviation;
 	}

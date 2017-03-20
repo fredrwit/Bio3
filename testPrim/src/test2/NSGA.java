@@ -5,8 +5,14 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class NSGA {
+	
+	private static double CROSSOVER_PROB = 0.9;
+	private static double MUTATION_PROB = 0.5;
+	private static int DISTR_CROSSOVER = 20;
+	private static int DISTR_MUT = 20;
 	
 	public static void calcObj(Graph graph, List<Chromosome> chromList){
 		
@@ -186,6 +192,101 @@ public class NSGA {
 				}
 			}
 		}
+	}
+	
+	public static Chromosome selection(List<Chromosome> pop, Random rand) {
+		int p1num = rand.nextInt(pop.size());
+		int p2num = p1num;
+		while (p1num == p2num) {
+			p2num = rand.nextInt(pop.size());
+		}
+		Chromosome p1 = pop.get(p1num);
+		Chromosome p2 = pop.get(p2num);
+		if (rand.nextDouble() < 0.8) {
+			if (p1.rank < p2.rank) {
+				return p1;
+			}
+			else if (p1.rank == p2.rank){
+				if (p1.crowdingDist > p2.crowdingDist) {
+					return p1;
+				}
+				else {
+					return p2;
+				}
+			}
+			else {
+				return p2;
+			}
+		}
+		else {
+			if (rand.nextDouble() < 0.5) {
+				return p1;
+			}
+			else {
+				return p2;
+			}
+		}
+	}
+	
+	public static Chromosome[] crossover(Chromosome p1, Chromosome p2) {
+		Random rand = new Random();
+		
+		Chromosome c1 = new Chromosome(p1.getSize());
+		Chromosome c2 = new Chromosome(p2.getSize());
+		for (int i = 0; i < p1.getSize(); i++) {
+			if (rand.nextDouble() < 0.5) {
+				c1.update(i, p1.getRepr()[i]);
+			}
+			else {
+				c1.update(i, p2.getRepr()[i]);
+			}
+			if (rand.nextDouble() < 0.5) {
+				c2.update(i, p1.getRepr()[i]);
+			}
+			else {
+				c2.update(i, p2.getRepr()[i]);
+			}
+			
+		}
+		return new Chromosome[]{c1, c2};
+	}
+	
+	public static Chromosome mutate(Chromosome chrom, Graph graph) {
+		Random rand = new Random();
+		int randNode = rand.nextInt(chrom.getSize())+1;
+		Node nearestNeigh = graph.getNode(randNode).getNearestNeigh();
+		chrom.update(randNode-1, nearestNeigh.id);
+		return chrom;
+	}
+	
+	public static List<Chromosome> createOffspring(List<Chromosome> pop, Graph graph) {
+		Random rand = new Random();
+		List<Chromosome> children = new ArrayList<Chromosome>();
+		while (children.size() < pop.size()) {
+			Chromosome p1 = selection(pop, rand);
+			Chromosome p2 = selection(pop, rand);
+			while (p1 == p2) {
+				p2 = selection(pop, rand);
+			}
+			Chromosome c1;
+			Chromosome c2;
+			if (rand.nextDouble() < CROSSOVER_PROB) {
+				Chromosome[] c = crossover(p1, p2);
+				c1 = c[0];
+				c2 = c[1];
+			}
+			else {
+				c1 = p1;
+				c2 = p2;
+			}
+			if (rand.nextDouble() < MUTATION_PROB) {
+				c1 = mutate(c1,graph);
+				c2 = mutate(c2,graph);
+			}
+			children.add(c1);
+			children.add(c2);
+		}
+		return children;
 	}
 
 }

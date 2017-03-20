@@ -153,37 +153,6 @@ public class Main {
 		        
 	}
 	
-	public static Object[] crossover(Chromosome p1, Chromosome p2) {
-		Random rand = new Random();
-		
-		Chromosome c1 = new Chromosome(p1.getSize());
-		Chromosome c2 = new Chromosome(p2.getSize());
-		for (int i = 0; i < p1.getSize(); i++) {
-			if (rand.nextDouble() < 0.5) {
-				c1.update(i, p1.getRepr()[i]);
-			}
-			else {
-				c1.update(i, p2.getRepr()[i]);
-			}
-			if (rand.nextDouble() < 0.5) {
-				c2.update(i, p1.getRepr()[i]);
-			}
-			else {
-				c2.update(i, p2.getRepr()[i]);
-			}
-			
-		}
-		return new Object[]{c1, c2};
-	}
-	
-	public static Chromosome mutate(Chromosome chrom, Graph graph) {
-		Random rand = new Random();
-		int randNode = rand.nextInt(chrom.getSize())+1;
-		Node nearestNeigh = graph.getNode(randNode).getNearestNeigh();
-		chrom.update(randNode-1, nearestNeigh.id);
-		return chrom;
-	}
-	
 	public static void generateChildren(List<Chromosome> parents) {
 		List<Chromosome> children = new ArrayList<Chromosome>();
 		while (children.size() < parents.size()) {
@@ -281,35 +250,62 @@ public class Main {
 		return pop;
 	}
 	
-	public static void runNSGA2() {
-		
+	public static void runNSGA2(List<Chromosome> pop, Graph graph, int generation) {
+		NSGA.calcObj(graph, pop);
+		boolean[] objectives = {true,false,false,false};
+		for (int g = 0; g < generation; g++) {
+			System.out.println("Generation number: " + Integer.toString(g+1));
+			Map<Integer, List<Chromosome>> initFronts = NSGA.fnds(pop, objectives);
+			NSGA.crowdingDist(initFronts, objectives);
+			List<Chromosome> children = NSGA.createOffspring(pop,graph);
+			NSGA.calcObj(graph, children);
+			List<Chromosome> R = new ArrayList<Chromosome>(pop);
+			R.addAll(children);
+			Map<Integer, List<Chromosome>> fronts = NSGA.fnds(R, objectives);
+			NSGA.crowdingDist(fronts, objectives);
+			List<Chromosome> newGen = new ArrayList<Chromosome>();
+			for (int i : fronts.keySet()) {
+				if (newGen.size()+fronts.get(i).size() <= pop.size()) {
+					newGen.addAll(fronts.get(i));
+				}
+				else {
+					fronts.get(i).sort(Comparator.comparing(Chromosome::getCrowd));
+					int last = fronts.get(i).size()-1;
+					while (newGen.size() < pop.size()) {
+						newGen.add(fronts.get(i).get(last));
+						last--;
+					}
+				}
+			}
+			pop = newGen;
+		}
 	}
 	
 	
 	public static void main(String[] args) {		
-		BufferedImage pixels = get_image("Test image/1/test image.jpg");
+		BufferedImage pixels = get_image("Test image/dismap.jpg");
 		Graph graph = new Graph(pixels.getHeight(),pixels.getWidth());
 		initGraph(graph,pixels);
 		initWeights(graph);
 		List<Edge> mst = prims(graph);
-		List<Chromosome> pop = initPop(mst, graph, 5);
+		List<Chromosome> pop2 = initPop(mst, graph, 50);
 		
-		initialPop pop2 = new initialPop(graph,pixels);
+		//initialPop pop2 = new initialPop(graph,pixels);
 		
-		NSGA.calcObj(graph, pop2.population);
-		boolean[] objectives = {true,false,false,false};
-		Map<Integer, List<Chromosome>> fronts = NSGA.fnds(pop2.population, objectives);
-		System.out.println(fronts);
-		NSGA.crowdingDist(fronts, objectives);
+		runNSGA2(pop2, graph, 100);
 		
-		for (int q = 0; q < pop.size(); q++) {
-			//System.out.println(decode(pop.get(q), graph));
-			System.out.println(pop.get(q).overallDeviation);
-			System.out.println(pop.get(q).edge);
-			System.out.println(pop.get(q).connectivity);
-			System.out.println();
-			//colorEdges(graph);
-			//writeImage(graph, pixels, "loly", q);
+		
+		for (int q = 0; q < pop2.size(); q++) {
+			decode(pop2.get(q), graph);
+			//System.out.println(pop.get(q).overallDeviation);
+			//System.out.println(pop.get(q).edge);
+			//System.out.println(pop.get(q).connectivity);
+			//System.out.println();
+			if (q == 0 || q == pop2.size()-1) {
+				colorEdges(graph);
+				writeImage(graph, pixels, "loly", q);
+			}
+			
 		}
 		int[] counter = new int[50];
 		for (int i = 0; i < graph.rows; i++) {
