@@ -15,6 +15,18 @@ public class Chromosome {
 	public int rank;
 	public double crowdingDist;
 
+	public void updateEdge(double i) {
+		this.edge -= i;
+	}
+	
+	public void updateDev(double i) {
+		this.overallDeviation += i;
+	}
+	
+	public void updateConn(double i) {
+		this.connectivity += i;
+	}
+	
 	public double getCrowd() {
 		return this.crowdingDist;
 	}

@@ -18,40 +18,42 @@ public class NSGA {
 	public static void calcObj(Graph graph, List<Chromosome> chromList){
 		
 		for (Chromosome chrom : chromList){
-			
-			
-			
-			double overallDeviation = 0;
-			double edgeValue = 0.0;
-			double connValue = 0.0;
+
+//			double overallDeviation = 0;
+//			double edgeValue = 0.0;
+//			double connValue = 0.0;
 			
 			Main.decode(chrom, graph);
 			
 			IntStream.range(1, graph.getSize()+1).parallel().forEach(i -> {
-				graph.getNode(i).neighbors.stream().parallel().forEach(j -> {
-					if (j.getSegment() != graph.getNode(i).getSegment()) {
-						edgeValue += Main.distance(graph.getNode(i), j);
-						}
-					});
-				});
-			
-			for (int i = 0; i < graph.rows; i++){
-				for (int j = 0; j < graph.cols; j++){
-					double counter = 0;
-					overallDeviation += distance(graph.nodes[i][j], chrom.getClusters().get(graph.nodes[i][j].segment-1).centroid); 
-					for (Node neighbor : graph.nodes[i][j].neighbors){
-						if (neighbor.getSegment() != graph.nodes[i][j].getSegment()) {
-							edgeValue += Main.distance(graph.nodes[i][j], neighbor);
-							counter += 1.0;
-							connValue += 1.0/counter;
-						}
+				chrom.updateDev(distance(graph.getNode(i), chrom.getClusters().get(graph.getNode(i).segment-1).centroid));
+				double counter = 0;
+				for (Node neighbor : graph.getNode(i).neighbors) {
+					if (neighbor.getSegment() != graph.getNode(i).getSegment()) {
+						chrom.updateEdge(Main.distance(graph.getNode(i), neighbor));
+						counter += 1.0;
+						chrom.updateConn(1.0/counter);
 					}
 				}
-			}
-			edgeValue = -edgeValue;
-			chrom.setEdge(edgeValue);	
-			chrom.setConnectivity(connValue);
-			chrom.setOverallDeviation(overallDeviation);
+				});
+			
+//			for (int i = 0; i < graph.rows; i++){
+//				for (int j = 0; j < graph.cols; j++){
+//					double counter = 0;
+//					overallDeviation += distance(graph.nodes[i][j], chrom.getClusters().get(graph.nodes[i][j].segment-1).centroid); 
+//					for (Node neighbor : graph.nodes[i][j].neighbors){
+//						if (neighbor.getSegment() != graph.nodes[i][j].getSegment()) {
+//							edgeValue += Main.distance(graph.nodes[i][j], neighbor);
+//							counter += 1.0;
+//							connValue += 1.0/counter;
+//						}
+//					}
+//				}
+//			}
+//			edgeValue = -edgeValue;
+//			chrom.setEdge(edgeValue);	
+//			chrom.setConnectivity(connValue);
+//			chrom.setOverallDeviation(overallDeviation);
 		}
 	}
 	

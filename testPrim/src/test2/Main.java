@@ -242,7 +242,7 @@ public class Main {
 			ArrayList<Edge> tempMST = new ArrayList<Edge>(mst);
 			int removed = 0;
 			while (removed < (i-1)) {
-				tempMST.remove(tempMST.indexOf(tempMST.stream().max(Comparator.comparing(Edge::getWeight)).get()));
+				tempMST.remove(tempMST.indexOf(tempMST.stream().max(Comparator.comparing(Edge::getWeight)).get())-removed*3000);
 				removed++;
 			}
 			pop.add(generateChromosome(tempMST, graph));
@@ -283,35 +283,42 @@ public class Main {
 	
 	
 	public static void main(String[] args) {		
-		BufferedImage pixels = get_image("Test image/test_image.jpg");
+		BufferedImage pixels = get_image("Test image/1/test image.jpg");
 		Graph graph = new Graph(pixels.getHeight(),pixels.getWidth());
 		initGraph(graph,pixels);
 		initWeights(graph);
 		List<Edge> mst = prims(graph);
-		
-		System.out.println(mst);
-		System.exit(0);
-		
 		List<Chromosome> pop2 = initPop(mst, graph, 50);
 		
 		//initialPop pop2 = new initialPop(graph,pixels);
 		
-		runNSGA2(pop2, graph, 100);
-		
-		
-		for (int q = 0; q < pop2.size(); q++) {
-			decode(pop2.get(q), graph);
+		for (int p = 0; p < pop2.size(); p++) {
+			decode(pop2.get(p), graph);
 			//System.out.println(pop.get(q).overallDeviation);
 			//System.out.println(pop.get(q).edge);
 			//System.out.println(pop.get(q).connectivity);
 			//System.out.println();
-			if (q == 0 || q == pop2.size()-1) {
+
 				colorEdges(graph);
-				writeImage(graph, pixels, "loly", q);
-			}
+				writeImage(graph, pixels, "loly", p);
 			
 		}
-		int[] counter = new int[50];
+		
+		runNSGA2(pop2, graph, 25);
+		
+		int num_seg = 0;
+		for (int q = 0; q < pop2.size(); q++) {
+			num_seg = decode(pop2.get(q), graph);
+			//System.out.println(pop.get(q).overallDeviation);
+			//System.out.println(pop.get(q).edge);
+			//System.out.println(pop.get(q).connectivity);
+			//System.out.println();
+
+				colorEdges(graph);
+				writeImage(graph, pixels, "loly", (q+50));
+			
+		}
+		int[] counter = new int[num_seg];
 		for (int i = 0; i < graph.rows; i++) {
 			for (int j = 0; j < graph.cols; j++) {
 				counter[graph.nodes[i][j].getSegment()-1] += 1;
