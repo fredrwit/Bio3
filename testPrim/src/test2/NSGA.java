@@ -116,16 +116,73 @@ public class NSGA {
 	
 	public static void crowdingDist(Map<Integer, List<Chromosome>> fronts, boolean[] objectives) {
 		for (int i : fronts.keySet()) {
-			int L = fronts.get(i).size();
+			int L = fronts.get(i).size()-1;
+			if (L+1 == 0) {
+				continue;
+			}
 			for (Chromosome chrom : fronts.get(i)) {
 				chrom.crowdingDist = 0;
 			}
 			if (objectives[0]) {
+				fronts.get(i).sort(Comparator.comparing(Chromosome::getEdge));
+				fronts.get(i).get(0).crowdingDist = Double.POSITIVE_INFINITY;
+				fronts.get(i).get(L).crowdingDist = Double.POSITIVE_INFINITY;
+				for (int j = 1; j < L; j++) {
+					fronts.get(i).get(j).crowdingDist += (fronts.get(i).get(j+1).edge -fronts.get(i).get(j-1).edge)/(fronts.get(i).get(L).edge-fronts.get(i).get(0).edge);
+				}
+				fronts.get(i).sort(Comparator.comparing(Chromosome::getConn));
+				fronts.get(i).get(0).crowdingDist = Double.POSITIVE_INFINITY;
+				fronts.get(i).get(L).crowdingDist = Double.POSITIVE_INFINITY;
+				for (int j = 1; j < L; j++) {
+					fronts.get(i).get(j).crowdingDist += (fronts.get(i).get(j+1).connectivity -fronts.get(i).get(j-1).connectivity)/(fronts.get(i).get(L).connectivity-fronts.get(i).get(0).connectivity);
+				}
+			}
+			else if (objectives[1]) {
+				fronts.get(i).sort(Comparator.comparing(Chromosome::getEdge));
+				fronts.get(i).get(0).crowdingDist = Double.POSITIVE_INFINITY;
+				fronts.get(i).get(L).crowdingDist = Double.POSITIVE_INFINITY;
+				for (int j = 1; j < L; j++) {
+					fronts.get(i).get(j).crowdingDist += (fronts.get(i).get(j+1).edge -fronts.get(i).get(j-1).edge)/(fronts.get(i).get(L).edge-fronts.get(i).get(0).edge);
+				}
 				fronts.get(i).sort(Comparator.comparing(Chromosome::getDev));
 				fronts.get(i).get(0).crowdingDist = Double.POSITIVE_INFINITY;
 				fronts.get(i).get(L).crowdingDist = Double.POSITIVE_INFINITY;
 				for (int j = 1; j < L; j++) {
-					fronts.get(i).get(j).crowdingDist += (fronts.get(i).get(j+1).)
+					fronts.get(i).get(j).crowdingDist += (fronts.get(i).get(j+1).overallDeviation -fronts.get(i).get(j-1).overallDeviation)/(fronts.get(i).get(L).overallDeviation-fronts.get(i).get(0).overallDeviation);
+				}
+			}
+			else if (objectives[2]) {
+				fronts.get(i).sort(Comparator.comparing(Chromosome::getDev));
+				fronts.get(i).get(0).crowdingDist = Double.POSITIVE_INFINITY;
+				fronts.get(i).get(L).crowdingDist = Double.POSITIVE_INFINITY;
+				for (int j = 1; j < L; j++) {
+					fronts.get(i).get(j).crowdingDist += (fronts.get(i).get(j+1).overallDeviation -fronts.get(i).get(j-1).overallDeviation)/(fronts.get(i).get(L).overallDeviation-fronts.get(i).get(0).overallDeviation);
+				}
+				fronts.get(i).sort(Comparator.comparing(Chromosome::getConn));
+				fronts.get(i).get(0).crowdingDist = Double.POSITIVE_INFINITY;
+				fronts.get(i).get(L).crowdingDist = Double.POSITIVE_INFINITY;
+				for (int j = 1; j < L; j++) {
+					fronts.get(i).get(j).crowdingDist += (fronts.get(i).get(j+1).connectivity -fronts.get(i).get(j-1).connectivity)/(fronts.get(i).get(L).connectivity-fronts.get(i).get(0).connectivity);
+				}
+			}
+			else if (objectives[3]) {
+				fronts.get(i).sort(Comparator.comparing(Chromosome::getEdge));
+				fronts.get(i).get(0).crowdingDist = Double.POSITIVE_INFINITY;
+				fronts.get(i).get(L).crowdingDist = Double.POSITIVE_INFINITY;
+				for (int j = 1; j < L; j++) {
+					fronts.get(i).get(j).crowdingDist += (fronts.get(i).get(j+1).edge -fronts.get(i).get(j-1).edge)/(fronts.get(i).get(L).edge-fronts.get(i).get(0).edge);
+				}
+				fronts.get(i).sort(Comparator.comparing(Chromosome::getConn));
+				fronts.get(i).get(0).crowdingDist = Double.POSITIVE_INFINITY;
+				fronts.get(i).get(L).crowdingDist = Double.POSITIVE_INFINITY;
+				for (int j = 1; j < L; j++) {
+					fronts.get(i).get(j).crowdingDist += (fronts.get(i).get(j+1).connectivity -fronts.get(i).get(j-1).connectivity)/(fronts.get(i).get(L).connectivity-fronts.get(i).get(0).connectivity);
+				}
+				fronts.get(i).sort(Comparator.comparing(Chromosome::getDev));
+				fronts.get(i).get(0).crowdingDist = Double.POSITIVE_INFINITY;
+				fronts.get(i).get(L).crowdingDist = Double.POSITIVE_INFINITY;
+				for (int j = 1; j < L; j++) {
+					fronts.get(i).get(j).crowdingDist += (fronts.get(i).get(j+1).overallDeviation -fronts.get(i).get(j-1).overallDeviation)/(fronts.get(i).get(L).overallDeviation-fronts.get(i).get(0).overallDeviation);
 				}
 			}
 		}

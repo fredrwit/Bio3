@@ -281,6 +281,10 @@ public class Main {
 		return pop;
 	}
 	
+	public static void runNSGA2() {
+		
+	}
+	
 	
 	public static void main(String[] args) {		
 		BufferedImage pixels = get_image("Test image/1/test image.jpg");
@@ -294,9 +298,9 @@ public class Main {
 		
 		NSGA.calcObj(graph, pop2.population);
 		boolean[] objectives = {true,false,false,false};
-		System.out.println(NSGA.fnds(pop2.population, objectives));
-
-		System.exit(0);
+		Map<Integer, List<Chromosome>> fronts = NSGA.fnds(pop2.population, objectives);
+		System.out.println(fronts);
+		NSGA.crowdingDist(fronts, objectives);
 		
 		for (int q = 0; q < pop.size(); q++) {
 			//System.out.println(decode(pop.get(q), graph));
