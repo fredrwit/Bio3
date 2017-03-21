@@ -13,9 +13,8 @@ import java.util.stream.IntStream;
 public class NSGA {
 	
 	private static double CROSSOVER_PROB = 0.9;
-	private static double MUTATION_PROB = 0.5;
-	private static int DISTR_CROSSOVER = 20;
-	private static int DISTR_MUT = 20;
+	private static double MUTATION_PROB = 0.3;
+
 	
 	public static void calcObj(Graph graph, List<Chromosome> chromList){
 		

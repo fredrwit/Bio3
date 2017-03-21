@@ -1,15 +1,54 @@
 package test2;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Node {
 	int[] rgb_values = {0,0,0};
 	int id;
 	ArrayList<Node> neighbors = new ArrayList<Node>();
+	List<Edge> outEdges = new ArrayList<Edge>();
+	List<Node> children = new ArrayList<Node>();
+	int counter = 0;
+	Node parent;
+	int sum = 0;
 	int segment = -1;
+	
+	public void setParent(Node p){
+		this.parent = p;
+	}
+	
+	public void removeChild(Node child){
+		this.children.remove(child);
+	}
+	
+	public Node getParent(){
+		return this.parent;
+	}
+	
+	public void addSum(int i) {
+		this.sum += i;
+	}
+	
+	public int getSum() {
+		return this.sum;
+	}
 
 	public Node(int i, int j, int cols) {
 		this.id = (i*cols)+(j+1);
+	}
+	public void addEdge(Edge edge){
+		this.outEdges.add(edge);
+	}
+	public List<Edge> getEdges(){
+		return this.outEdges;
+	}
+	
+	public void addChild(Node node){
+		this.children.add(node);
+	}
+	public List<Node> getChildren(){
+		return this.children;
 	}
 	
 	public void add_neighbor(Node node) {
