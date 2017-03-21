@@ -260,7 +260,7 @@ public class Main {
 		return pop;
 	}
 	
-	public static void runNSGA2(List<Chromosome> pop, Graph graph, int generation) {
+	public static Chromosome runNSGA2(List<Chromosome> pop, Graph graph, int generation) {
 		NSGA.calcObj(graph, pop);
 //		for (Chromosome chrom: pop) {
 //			System.out.println("dev: " + chrom.overallDeviation);
@@ -296,11 +296,14 @@ public class Main {
 			}
 			pop = newGen;
 		}
+		Map<Integer, List<Chromosome>> lastFront = NSGA.fnds(pop, objectives);
+		NSGA.crowdingDist(lastFront, objectives);
+		return NSGA.getBestChrom(pop, lastFront);
 	}
 	
 	
 	public static void main(String[] args) {		
-		BufferedImage pixels = get_image("Test image/1/test image.jpg");
+		BufferedImage pixels = get_image("Test image/1/test image2.jpg");
 		Graph graph = new Graph(pixels.getHeight(),pixels.getWidth());
 		initGraph(graph,pixels);
 		initWeights(graph);
@@ -321,20 +324,23 @@ public class Main {
 			
 		}
 		
-		runNSGA2(pop2, graph, 30);
+		Chromosome bestChrom = runNSGA2(pop2, graph, 150);
 		
-		int num_seg = 0;
-		for (int q = 0; q < pop2.size(); q++) {
-			num_seg = decode(pop2.get(q), graph);
-			//System.out.println(pop.get(q).overallDeviation);
-			//System.out.println(pop.get(q).edge);
-			//System.out.println(pop.get(q).connectivity);
-			//System.out.println();
-
-				colorEdges(graph);
-				writeImage(graph, pixels, "loly", (q+50));
-			
-		}
+		
+		int num_seg = decode(bestChrom, graph);
+		colorEdges(graph);
+		writeImage(graph, pixels, "loly", (8));
+//		for (int q = 0; q < pop2.size(); q++) {
+//			num_seg = decode(pop2.get(q), graph);
+//			System.out.println(pop.get(q).overallDeviation);
+//			System.out.println(pop.get(q).edge);
+//			System.out.println(pop.get(q).connectivity);
+//			System.out.println();
+//
+//				colorEdges(graph);
+//				writeImage(graph, pixels, "loly", (q+50));
+//			
+//		}
 		int[] counter = new int[num_seg];
 		for (int i = 0; i < graph.rows; i++) {
 			for (int j = 0; j < graph.cols; j++) {

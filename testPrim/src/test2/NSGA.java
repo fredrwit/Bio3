@@ -2,6 +2,7 @@ package test2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -25,36 +26,36 @@ public class NSGA {
 			double connValue = 0.0;
 			
 			Main.decode(chrom, graph);
-			
-			IntStream.range(1, graph.getSize()+1).parallel().forEach(i -> {
-				chrom.updateDev(NSGA.distance(graph.getNode(i), chrom.getClusters().get(graph.getNode(i).segment-1).centroid));
-				double counter = 0;
-				for (Node neighbor : graph.getNode(i).neighbors) {
-					if (neighbor.getSegment() != graph.getNode(i).getSegment()) {
-						chrom.updateEdge(Main.distance(graph.getNode(i), neighbor));
-						counter += 1.0;
-						chrom.updateConn(1.0/counter);
-					}
-				}
-				});
-			
-//			for (int i = 0; i < graph.rows; i++){
-//				for (int j = 0; j < graph.cols; j++){
-//					double counter = 0;
-//					overallDeviation += distance(graph.nodes[i][j], chrom.getClusters().get(graph.nodes[i][j].segment-1).centroid); 
-//					for (Node neighbor : graph.nodes[i][j].neighbors){
-//						if (neighbor.getSegment() != graph.nodes[i][j].getSegment()) {
-//							edgeValue += Main.distance(graph.nodes[i][j], neighbor);
-//							counter += 1.0;
-//							connValue += 1.0/counter;
-//						}
+//			
+//			IntStream.range(1, graph.getSize()+1).parallel().forEach(i -> {
+//				chrom.updateDev(NSGA.distance(graph.getNode(i), chrom.getClusters().get(graph.getNode(i).segment-1).centroid));
+//				double counter = 0;
+//				for (Node neighbor : graph.getNode(i).neighbors) {
+//					if (neighbor.getSegment() != graph.getNode(i).getSegment()) {
+//						chrom.updateEdge(Main.distance(graph.getNode(i), neighbor));
+//						counter += 1.0;
+//						chrom.updateConn(1.0/counter);
 //					}
 //				}
-//			}
-//			edgeValue = -edgeValue;
-//			chrom.setEdge(edgeValue);	
-//			chrom.setConnectivity(connValue);
-//			chrom.setOverallDeviation(overallDeviation);
+//				});
+			
+			for (int i = 0; i < graph.rows; i++){
+				for (int j = 0; j < graph.cols; j++){
+					double counter = 0;
+					overallDeviation += distance(graph.nodes[i][j], chrom.getClusters().get(graph.nodes[i][j].segment-1).centroid); 
+					for (Node neighbor : graph.nodes[i][j].neighbors){
+						if (neighbor.getSegment() != graph.nodes[i][j].getSegment()) {
+							edgeValue += Main.distance(graph.nodes[i][j], neighbor);
+							counter += 1.0;
+							connValue += 1.0/counter;
+						}
+					}
+				}
+			}
+			edgeValue = -edgeValue;
+			chrom.setEdge(edgeValue);	
+			chrom.setConnectivity(connValue);
+			chrom.setOverallDeviation(overallDeviation);
 		}
 	}
 	
@@ -301,6 +302,14 @@ public class NSGA {
 			children.add(c2);
 		}
 		return children;
+	}
+	
+	public static Chromosome getBestChrom(List<Chromosome> population, Map<Integer, List<Chromosome>> fronts) {
+		List<Chromosome> temp = new ArrayList<Chromosome>();
+		temp.addAll(fronts.get(1));
+		temp.sort(Comparator.comparing(Chromosome::getCrowd));
+		Collections.reverse(temp);
+		return temp.get(0);
 	}
 
 }
