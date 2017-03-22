@@ -1,4 +1,4 @@
-package test2;
+package funker;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
 public class NSGA {
 	
 	private static double CROSSOVER_PROB = 0.9;
-	private static double MUTATION_PROB = 0.5;
+	private static double MUTATION_PROB = 0.3;
 
 	
 	public static void calcObj(Graph graph, List<Chromosome> chromList){
@@ -208,8 +208,7 @@ public class NSGA {
 		}
 	}
 	
-	public static Chromosome selection(List<Chromosome> pop) {
-		Random rand = new Random();
+	public static Chromosome selection(List<Chromosome> pop, Random rand) {
 		int p1num = rand.nextInt(pop.size());
 		int p2num = p1num;
 		while (p1num == p2num) {
@@ -278,10 +277,10 @@ public class NSGA {
 		Random rand = new Random();
 		List<Chromosome> children = new ArrayList<Chromosome>();
 		while (children.size() < pop.size()) {
-			Chromosome p1 = selection(pop);
-			Chromosome p2 = selection(pop);
+			Chromosome p1 = selection(pop, rand);
+			Chromosome p2 = selection(pop, rand);
 			while (p1 == p2) {
-				p2 = selection(pop);
+				p2 = selection(pop, rand);
 			}
 			Chromosome c1;
 			Chromosome c2;
