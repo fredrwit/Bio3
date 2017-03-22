@@ -1,5 +1,7 @@
 package test2;
 
+import java.awt.Color;
+
 import javax.swing.JFrame;
 
 import org.math.plot.*;
@@ -7,6 +9,12 @@ import org.math.plot.*;
 public class test {
 	
 	public static void main(String[] args) {
+		
+		Color color = new Color(0,0,0);
+		
+		System.out.println(color.blue);
+		System.exit(0);
+		
 		// define your data
         double[] x = { 1, 2, 3, 4, 5, 6 };
         double[] y = { 45, 89, 6, 32, 63, 12 };
@@ -20,6 +28,7 @@ public class test {
         plot.addLegend("SOUTH");
 
         // add a line plot to the PlotPanel
+ 
         plot.addLinePlot("my plot", x, y);
         plot3d.addLinePlot("LOOOL", x, y, z);
 

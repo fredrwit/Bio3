@@ -21,7 +21,7 @@ import javax.imageio.ImageIO;
 
 public class Main {
 	
-	public static String IMAGE = "Test image/4/test image.jpg";
+	public static String IMAGE = "Test image/1/test image.jpg";
 
 	public static BufferedImage get_image(String fileName) {
 		BufferedImage img = null;
@@ -444,6 +444,11 @@ public class Main {
 		for (int g = 0; g < generation; g++) {
 			System.out.println("Generation number: " + Integer.toString(g+1));
 			Map<Integer, List<Chromosome>> initFronts = NSGA.fnds(pop, objectives);
+			System.out.println(initFronts);
+			for (int key : initFronts.keySet()) {
+				System.out.println(initFronts.get(key).size());
+			}
+			Plot.plot2d(initFronts,objectives,pop.size());
 			NSGA.crowdingDist(initFronts, objectives);
 			List<Chromosome> children = NSGA.createOffspring(pop,graph);
 			NSGA.calcObj(graph, children);
@@ -466,19 +471,17 @@ public class Main {
 				}
 			}
 			pop = newGen;
-			Map<Integer, List<Chromosome>> lastFront = NSGA.fnds(pop, objectives);
-			NSGA.crowdingDist(lastFront, objectives);
-			System.out.println("Segments in best chromosome: " + decode(NSGA.getBestChrom(pop, lastFront), graph));
-			//colorAndWrite(graph, 1, g);
-			//colorAndWrite(graph, 2, g);
-			colorBigAndWrite(graph,1,g);
-			colorBigAndWrite(graph,2,g);
+//			Map<Integer, List<Chromosome>> lastFront = NSGA.fnds(pop, objectives);
+//			NSGA.crowdingDist(lastFront, objectives);
+//			System.out.println("Segments in best chromosome: " + decode(NSGA.getBestChrom(pop, lastFront), graph));
+//			//colorAndWrite(graph, 1, g);
+//			//colorAndWrite(graph, 2, g);
+//			colorBigAndWrite(graph,1,g);
+//			colorBigAndWrite(graph,2,g);
 		}
 		Map<Integer, List<Chromosome>> lastFronts = NSGA.fnds(pop, objectives);
 		NSGA.crowdingDist(lastFronts, objectives);
-		Plot.plot2d(lastFronts);
 		//return NSGA.getBestChrom(pop, lastFront);
-		System.exit(0);
 	}
 	
 	
@@ -523,7 +526,7 @@ public class Main {
 //				
 //			
 //		}
-		runNSGA2(pop2, graph, 100, pixels);
+		runNSGA2(pop2, graph, 50, pixels);
 		
 		
 //		int num_seg = decode(bestChrom, graph);

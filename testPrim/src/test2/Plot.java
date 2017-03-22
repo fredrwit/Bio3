@@ -1,6 +1,9 @@
 package test2;
 
+import java.awt.Color;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Map;
 
 import javax.swing.JFrame;
@@ -12,36 +15,54 @@ public class Plot {
 	
 	public static void plot2d(Map<Integer, List<Chromosome>> fronts, boolean[] objectives, int size) {
 		// define your data
-        double[] x = new double[size];
-        double 
 		
-		if (objectives[0] == true) {
-        	for (int keys : fronts.keySet()) {
-        		for (Chromosome chrom : fronts.get(keys)) {
-        			chrom.getEdge();
-        			chrom.getConn();
-        		}
-        	}
-        }
-		double[] x = { 1, 2, 3, 4, 5, 6 };
-        double[] y = { 45, 89, 6, 32, 63, 12 };
-        double[] z = { 45, 89, 6, 32, 63, 12 };
-
-        // create your PlotPanel (you can use it as a JPanel)
+        Color color = new Color(0,0,0);
+        Color[] colors = {color.WHITE,color.blue,color.red,color.green,color.yellow,color.pink,color.cyan,color.gray,color.orange,color.magenta,color};
+        
+        
         Plot2DPanel plot = new Plot2DPanel();
         Plot3DPanel plot3d = new Plot3DPanel();
+        
+
+		if (objectives[2] == true) {
+			for (int key : fronts.keySet()) {
+				
+				List<Double> x = new ArrayList<Double>();
+				List<Double> y = new ArrayList<Double>();
+				fronts.get(key).sort(Comparator.comparing(Chromosome::getConn));
+				for (Chromosome chrom : fronts.get(key)) {
+					if (chrom.getConn() == 0.0) {
+						continue;
+					}
+        			x.add(chrom.getDev());
+        			y.add(chrom.getConn());
+        		}
+				double[] X = new double[x.size()];
+				double[] Y = new double[y.size()];
+				for (int i = 0; i < x.size(); i++) {
+					X[i] = x.get(i);
+					Y[i] = y.get(i);
+				}
+				if (x.size() > 2) {
+	        		plot.addLinePlot("LOOOL"+key,colors[key], X, Y);
+
+				}
+        	}
+        }
+		
+        // create your PlotPanel (you can use it as a JPanel)
+        
 
         // define the legend position
         plot.addLegend("SOUTH");
 
         // add a line plot to the PlotPanel
-        plot.addLinePlot("my plot", x, y);
-        plot3d.addLinePlot("LOOOL", x, y, z);
+        //plot.addScatterPlot("my plot", x, y);
 
         // put the PlotPanel in a JFrame like a JPanel
         JFrame frame = new JFrame("a plot panel");
         frame.setSize(600, 600);
-        frame.setContentPane(plot3d);
+        frame.setContentPane(plot);
         frame.setVisible(true);
 	}
 	

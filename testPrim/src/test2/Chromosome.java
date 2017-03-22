@@ -92,9 +92,9 @@ public class Chromosome {
 		return this.representation.length;
 	}
 	
-	@Override
-	public String toString() {
-		// TODO Auto-generated method stub
-		return "(" + Double.toString(this.edge) + ", " + Double.toString(this.connectivity) + ")";
-	}
+	//@Override
+//	public String toString() {
+//		// TODO Auto-generated method stub
+//		return "(" + Double.toString(this.overallDeviation) + ", " + Double.toString(this.connectivity) + ")";
+//	}
 }
