@@ -23,8 +23,8 @@ import javax.imageio.ImageIO;
 public class Main {
 	
 	
-	public static boolean[] objectives = {false,false,false,true};
-	public static String IMAGE = "Test image/1/test image.jpg";
+	public static boolean[] objectives = {true,false,false,false};
+	public static String IMAGE = "Test image/3/test image.jpg";
 
 	public static BufferedImage get_image(String fileName) {
 		BufferedImage img = null;
@@ -469,7 +469,7 @@ public class Main {
 			pop = newGen;
 			lastFront = NSGA.fnds(pop, objectives);
 			NSGA.crowdingDist(lastFront, objectives);
-			System.out.println("Segments in best chromosome: " + decode(NSGA.getBestChrom(pop, lastFront), graph));
+			System.out.println("Segments: " + decode(NSGA.getBestChrom(pop, lastFront), graph));
 			colorAndWrite(graph, 1, g);
 			colorAndWrite(graph, 2, g);
 //			colorBigAndWrite(graph,1,g);
@@ -520,16 +520,8 @@ public class Main {
 //				
 //			
 //		}
-		Map<Integer, List<Chromosome>> finished = runNSGA2(pop2, graph, 10, pixels);
-		int sum= 0;
-		for (int keys : finished.keySet()) {
-			System.out.println(finished.get(keys).size());
-			sum += finished.get(keys).size();
-		}
-		System.out.println();
-		System.out.println(sum);
-		System.out.println();
-		
+		Map<Integer, List<Chromosome>> finished = runNSGA2(pop2, graph, 100, pixels);
+
 		List<Chromosome> optimalFront = finished.get(1);
 		int size = optimalFront.size()/5;
 		if (objectives[0]) {
@@ -613,53 +605,10 @@ public class Main {
 				}
 			}
 		}
-//		else if (objectives[3]) {
-//			optimalFront.sort(Comparator.comparing(Chromosome::getConn));
-//			int counter2 = 100;
-//			int counter = 0;
-//			for (Chromosome chrom : optimalFront) {
-//				if (counter == 0 || counter == 1*size || counter == 2*size || counter == 3*size || counter == optimalFront.size()) {
-//					System.out.println("Overall-deviation: " + chrom.getDev());
-//					System.out.println("Edge value: " + chrom.getEdge());
-//					System.out.println("Connectivity: " + chrom.getConn());
-//					System.out.println("Number of segments: "+ decode(chrom,graph));
-//					colorAndWrite(graph,1,counter2);
-//					colorAndWrite(graph,2,counter2);
-//					counter2++;
-//				}
-//				counter++;
-//			}
-//		}	
+
 		
 		System.out.println("Done");
-	
-		//Print all
-		
-//		int num_seg = decode(bestChrom, graph);
-//		colorEdges(graph);
-//		writeImage(graph, pixels, "loly", (0));
-//		for (int q = 0; q < pop2.size(); q++) {
-//			num_seg = decode(pop2.get(q), graph);
-//			System.out.println(pop.get(q).overallDeviation);
-//			System.out.println(pop.get(q).edge);
-//			System.out.println(pop.get(q).connectivity);
-//			System.out.println();
-//
-//				colorEdges(graph);
-//				writeImage(graph, pixels, "loly", (q+50));
-//			
-//		}
-//		int[] counter = new int[num_seg];
-//		for (int i = 0; i < graph.rows; i++) {
-//			for (int j = 0; j < graph.cols; j++) {
-//				counter[graph.nodes[i][j].getSegment()-1] += 1;
-//			}
-//		}
-//		System.out.println(Arrays.toString(counter));
-//		
-//		
-//		
-//		
+
 
 	}
 

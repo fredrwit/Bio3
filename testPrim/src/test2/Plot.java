@@ -68,7 +68,7 @@ public class Plot {
 					Y[i] = y.get(i);
 				}
 				if (x.size() > 2) {
-	        		plot.addLinePlot("Front number: "+key,colors[key], X, Y);
+	        		plot.addScatterPlot("Front number: "+key,colors[key], X, Y);
 
 				}
         	}

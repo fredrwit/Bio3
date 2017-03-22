@@ -86,12 +86,19 @@ public class NSGA {
 					}
 				}
 				else if (objectives[1]) {
-					if (population.get(p).edge < population.get(q).edge && population.get(p).overallDeviation < population.get(q).overallDeviation) {
+//					if (population.get(p).edge < population.get(q).edge && population.get(p).overallDeviation < population.get(q).overallDeviation) {
+//						s.add(population.get(q));
+//					}
+//					else if (population.get(q).edge < population.get(p).edge && population.get(q).overallDeviation < population.get(p).overallDeviation) {
+//						n.put(population.get(p), n.get(population.get(p))+1);
+//					}
+					if (population.get(p).edge < population.get(q).edge && population.get(p).connectivity < population.get(q).connectivity) {
 						s.add(population.get(q));
 					}
-					else if (population.get(q).edge < population.get(p).edge && population.get(q).overallDeviation < population.get(p).overallDeviation) {
+					else if (population.get(q).edge < population.get(p).edge && population.get(q).connectivity < population.get(p).connectivity) {
 						n.put(population.get(p), n.get(population.get(p))+1);
 					}
+					
 				}
 				else if (objectives[2]) {
 					if (population.get(p).overallDeviation < population.get(q).overallDeviation && population.get(p).connectivity < population.get(q).connectivity) {
