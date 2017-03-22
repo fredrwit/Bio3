@@ -1,14 +1,13 @@
 package test2;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Time;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
@@ -21,6 +20,8 @@ import javax.imageio.ImageIO;
 
 
 public class Main {
+	
+	public static String IMAGE = "Test image/4/test image.jpg";
 
 	public static BufferedImage get_image(String fileName) {
 		BufferedImage img = null;
@@ -34,6 +35,19 @@ public class Main {
 	    return img;
 	}
 	
+	public static BufferedImage scale(BufferedImage imageToScale, int dWidth, int dHeight) {
+        BufferedImage scaledImage = null;
+        if (imageToScale != null) {
+            scaledImage = new BufferedImage(dWidth, dHeight, imageToScale.getType());
+            Graphics2D graphics2D = scaledImage.createGraphics();
+        	graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+            graphics2D.drawImage(imageToScale, 0, 0, dWidth, dHeight, null);
+            graphics2D.dispose();
+        }
+        return scaledImage;
+    }
+
 	public static void initGraph(Graph graph, BufferedImage pixels) {
 		System.out.println("Calculating colors and linking neighbors for each node...");
 		Node neighbor;
@@ -64,18 +78,6 @@ public class Main {
 					currentNode.add_neighbor(neighbor);
 				}
 				
-			}
-		}
-	}
-	
-	public static void resetImage(Graph graph) {
-		BufferedImage pixels = get_image("Test image/1/test image2.jpg");
-		Node currentNode;
-		for (int i = 0; i < pixels.getHeight(); i++) {
-			for (int j = 0; j < pixels.getWidth(); j++) {
-				currentNode = graph.nodes[i][j];
-				int[] rgb = {((pixels.getRGB(j,i) >> 16) & 0xFF),((pixels.getRGB(j,i) >> 8) & 0xFF),(pixels.getRGB(j,i) & 0xFF)};
-				currentNode.set_values(rgb);
 			}
 		}
 	}
@@ -136,45 +138,96 @@ public class Main {
 		return currentCluster-1;
 	}
 	
-	public static void colorEdges(Graph graph) {
-		int[] rgb = {0,255,0};
-		for (int i = 0; i < graph.rows; i++) {
-			for (int j = 0; j < graph.cols; j++) {
-				for (Node neighbor : graph.nodes[i][j].neighbors) {
-					if (neighbor.getSegment() != graph.nodes[i][j].getSegment()) {
-						graph.nodes[i][j].set_values(rgb);
+	public static void colorAndWrite(Graph graph, int type, int num) {
+		BufferedImage img = get_image(IMAGE);
+		img = scale(img, (int) (img.getWidth()*0.5), (int) (img.getHeight()*0.5));
+		
+		if (type == 1) {
+			Color color = new Color(0,0,0);
+			Color background = new Color(255,255,255);
+			for (int i = 0; i < graph.rows; i++) {
+				for (int j = 0; j < graph.cols; j++) {
+					img.setRGB(j,i, background.getRGB());
+					for (Node neighbor : graph.nodes[i][j].neighbors) {
+						if (neighbor.getSegment() != graph.nodes[i][j].getSegment()) {
+							img.setRGB(j,i, color.getRGB());					
+						}
+					}
+				}
+			}
+			
+		}
+		else if (type == 2) {
+			Color color = new Color(0,255,0);
+			for (int i = 0; i < graph.rows; i++) {
+				for (int j = 0; j < graph.cols; j++) {
+					for (Node neighbor : graph.nodes[i][j].neighbors) {
+						if (neighbor.getSegment() != graph.nodes[i][j].getSegment()) {
+							img.setRGB(j,i, color.getRGB());
+			
+							
+						}
 					}
 				}
 			}
 		}
-	}
-	
-	public static void writeImage(Graph graph, BufferedImage image, String filename, int num) {
-		
-		for (int i = 0; i < graph.rows; i++) {
-			for (int j = 0; j < graph.cols; j++) {
-				Color color = new Color(graph.nodes[i][j].rgb_values[0],graph.nodes[i][j].rgb_values[1],graph.nodes[i][j].rgb_values[2]);
-				image.setRGB(j,i, color.getRGB());
-			}
-		}
-
 		try {
-			String newName = filename.substring(0, filename.length() - 4);
-			File f = new File(newName + num + ".jpg");
-			ImageIO.write(image, "jpg", f);
+			img = scale(img, (int) (img.getWidth()/0.5), (int) (img.getHeight()/0.5));
+			File f = new File(type + "-" + num + ".jpg");
+			ImageIO.write(img, "jpg", f);
 		} catch (IOException e) {
 			System.out.println("IMAGE FAILED TO BE WRITTEN!");
 		}
-		        
 	}
 	
-	public static void generateChildren(List<Chromosome> parents) {
-		List<Chromosome> children = new ArrayList<Chromosome>();
-		while (children.size() < parents.size()) {
-			
-			
+	public static void colorBigAndWrite(Graph graph, int type, int num) {
+		BufferedImage img = get_image(IMAGE);
+		if (type == 1) {
+			Color color = new Color(0,0,0);
+			Color background = new Color(255,255,255);
+			for (int i = 0; i < img.getHeight(); i++) {
+				for (int j = 0; j < img.getWidth(); j++) {
+					img.setRGB(j,i, background.getRGB());
+				}
+			}
+			for (int i = 0; i < graph.rows; i++) {
+				for (int j = 0; j < graph.cols; j++) {
+					for (Node neighbor : graph.nodes[i][j].neighbors) {
+						if (neighbor.getSegment() != graph.nodes[i][j].getSegment()) {
+							if ((j < graph.nodes[i].length && j > 1) && (i < graph.nodes[i].length && i > 1) ) {
+								img.setRGB(j*2-1,i*2-1, color.getRGB());
+								img.setRGB(j*2-1,i*2, color.getRGB());
+								img.setRGB(j*2,i*2-1, color.getRGB());
+								img.setRGB(j*2,i*2, color.getRGB());
+							}
+						}
+					}
+				}
+			}
 		}
-		
+		else if (type == 2) {
+			Color color = new Color(0,255,0);
+			for (int i = 0; i < graph.rows; i++) {
+				for (int j = 0; j < graph.cols; j++) {
+					for (Node neighbor : graph.nodes[i][j].neighbors) {
+						if (neighbor.getSegment() != graph.nodes[i][j].getSegment()) {
+							if ((j < graph.nodes[i].length && j > 1) && (i < graph.nodes[i].length && i > 1) ) {
+								img.setRGB(j*2-1,i*2-1, color.getRGB());
+								img.setRGB(j*2-1,i*2, color.getRGB());
+								img.setRGB(j*2,i*2-1, color.getRGB());
+								img.setRGB(j*2,i*2, color.getRGB());
+							}				
+						}
+					}
+				}
+			}
+		}
+		try {
+			File f = new File(type + "-" + num + ".jpg");
+			ImageIO.write(img, "jpg", f);
+		} catch (IOException e) {
+			System.out.println("IMAGE FAILED TO BE WRITTEN!");
+		}
 	}
 	
 	public static List<Edge> prims(Graph graph) {
@@ -277,60 +330,28 @@ public class Main {
 		int lol;
 		List<Chromosome> pop = new ArrayList<Chromosome>();
 		for (int i = 1; i < size+1; i++ ) {
-			lol = rand.nextInt(1)+5;
-			List<Edge> tempMST = test(mst, graph, lol);
+			lol = rand.nextInt(10)+15;
+			List<Edge> tempMST = cut(mst, graph, lol);
 			pop.add(generateChromosome(tempMST, graph));
 		}
 		return pop;
 	}
 	
-	
-	public static List<Edge> test(List<Edge> mst, Graph graph, int cuts) {
+	public static List<Edge> cut(List<Edge> mst, Graph graph, int cuts) {
 		int clusterSize = graph.getSize()/cuts;
 		List<Edge> tempMST = new ArrayList<Edge>(mst);
 		for (int j = 0; j < cuts; j++) {
 			for (int i = tempMST.size()-1; i >= 0; i--) {
 				if (graph.getNode(tempMST.get(i).endNode).getSum() > clusterSize*0.6 && graph.getNode(tempMST.get(i).endNode).getSum() < clusterSize*1.4){
-
 					graph.getNode(tempMST.get(i).endNode).setParent(null);
 					graph.getNode(tempMST.get(i).startNode).getChildren().remove(graph.getNode(tempMST.get(i).endNode));
-
-
 					int deduct = -graph.getNode(tempMST.get(i).startNode).getSum();
 					updateParent(graph.getNode(tempMST.get(i).startNode), deduct);
-
 					tempMST.remove(i);
-
-							
 				}
 			}
 		}
-			return tempMST;
-			
-	}
-	
-	public static List<Edge> test2(List<Edge> mst, Graph graph, int cuts) {
-
-		List<Edge> tempMST = new ArrayList<Edge>(mst);
-
-		for (int i = tempMST.size()-1; i >= 0; i--) {
-
-			if (graph.getNode(tempMST.get(i).endNode).getSum() > ((graph.getSize()-1)/2 )*0.66 && graph.getNode(tempMST.get(i).endNode).getSum() < ((graph.getSize()-1)/2 )*1.44){
-
-				graph.getNode(tempMST.get(i).endNode).setParent(null);
-				graph.getNode(tempMST.get(i).startNode).getChildren().remove(graph.getNode(tempMST.get(i).endNode));
-
-				int deduct = -graph.getNode(tempMST.get(i).startNode).getSum();
-				updateParent(graph.getNode(tempMST.get(i).startNode), deduct);
-
-				tempMST.remove(i);
-				break;
-
-						
-			}
-		}
-		return tempMST;
-		
+		return tempMST;		
 	}
 	
 	public static void updateParent(Node n,int deduct){
@@ -365,7 +386,6 @@ public class Main {
 		Node[] visited = new Node[graph.getSize()];
 		s.push(graph.getNode(mst.get(0).startNode));
 		Node current;
-		int counter = 0;
 		while(!s.isEmpty()){
 			current = s.pop();
 
@@ -378,7 +398,6 @@ public class Main {
 			for (int i = 0; i<current.getEdges().size(); i++){
 
 				if(visited[(current.getEdges().get(i).endNode)-1] == null ){
-					counter += 1;
 					s.push(graph.getNode(current.getEdges().get(i).endNode));
 					current.addChild(graph.getNode(current.getEdges().get(i).endNode));
 					graph.getNode(current.getEdges().get(i).endNode).setParent(current);
@@ -421,7 +440,7 @@ public class Main {
 //			System.out.println();
 //		}
 //		System.exit(0);
-		boolean[] objectives = {false,true,false,false};
+		boolean[] objectives = {false,false,true,false};
 		for (int g = 0; g < generation; g++) {
 			System.out.println("Generation number: " + Integer.toString(g+1));
 			Map<Integer, List<Chromosome>> initFronts = NSGA.fnds(pop, objectives);
@@ -449,22 +468,27 @@ public class Main {
 			pop = newGen;
 			Map<Integer, List<Chromosome>> lastFront = NSGA.fnds(pop, objectives);
 			NSGA.crowdingDist(lastFront, objectives);
-			System.out.println(decode(NSGA.getBestChrom(pop, lastFront), graph));
-			colorEdges(graph);
-			writeImage(graph, pixels, "loly", (g));
-			resetImage(graph);	
+			System.out.println("Segments in best chromosome: " + decode(NSGA.getBestChrom(pop, lastFront), graph));
+			//colorAndWrite(graph, 1, g);
+			//colorAndWrite(graph, 2, g);
+			colorBigAndWrite(graph,1,g);
+			colorBigAndWrite(graph,2,g);
 		}
-//		Map<Integer, List<Chromosome>> lastFront = NSGA.fnds(pop, objectives);
-//		NSGA.crowdingDist(lastFront, objectives);
-//		return NSGA.getBestChrom(pop, lastFront);
+		Map<Integer, List<Chromosome>> lastFronts = NSGA.fnds(pop, objectives);
+		NSGA.crowdingDist(lastFronts, objectives);
+		Plot.plot2d(lastFronts);
+		//return NSGA.getBestChrom(pop, lastFront);
 		System.exit(0);
 	}
 	
 	
 	public static void main(String[] args) {		
-		BufferedImage pixels = get_image("Test image/1/test image2.jpg");
+		
+		BufferedImage pixels = get_image(IMAGE);
+		pixels = scale(pixels, (int) (pixels.getWidth()*0.5), (int) (pixels.getHeight()*0.5));
+		
 		Graph graph = new Graph(pixels.getHeight(),pixels.getWidth());
-		initGraph(graph,pixels);
+		initGraph(graph,pixels);		
 		initWeights(graph);
 		List<Edge> mst = prims(graph);
 
@@ -499,7 +523,7 @@ public class Main {
 //				
 //			
 //		}
-		runNSGA2(pop2, graph, 50, pixels);
+		runNSGA2(pop2, graph, 100, pixels);
 		
 		
 //		int num_seg = decode(bestChrom, graph);
