@@ -23,8 +23,8 @@ import javax.imageio.ImageIO;
 public class Main {
 	
 	
-	public static boolean[] objectives = {true,false,false,false};
-	public static String IMAGE = "Test image/3/test image.jpg";
+	public static boolean[] objectives = {false,false,false,true};
+	public static String IMAGE = "Test image/2.jpg";
 
 	public static BufferedImage get_image(String fileName) {
 		BufferedImage img = null;
@@ -520,7 +520,7 @@ public class Main {
 //				
 //			
 //		}
-		Map<Integer, List<Chromosome>> finished = runNSGA2(pop2, graph, 100, pixels);
+		Map<Integer, List<Chromosome>> finished = runNSGA2(pop2, graph, 50, pixels);
 
 		List<Chromosome> optimalFront = finished.get(1);
 		int size = optimalFront.size()/5;
